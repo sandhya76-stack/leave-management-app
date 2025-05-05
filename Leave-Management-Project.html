@@ -162,6 +162,10 @@
         date: new Date().toLocaleString()
       };
 
+      if(new Date(from.value) > new Date(to.value)) {
+        alert("From date cannot be greater than to date");
+      }
+
       // Save to localStorage
       let requests = JSON.parse(localStorage.getItem("leaveRequests")) || [];
       requests.push(request);
