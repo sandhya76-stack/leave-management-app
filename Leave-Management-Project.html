@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leave & Absence Management</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-section h2 {
+      margin-bottom: 15px;
+      color: #555;
+    }
+
+    form label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    form input,
+    form select,
+    form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    form button {
+      background-color: #4caf50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #45a049;
+    }
+
+    .success-message {
+      text-align: center;
+      color: green;
+      margin-top: 15px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .leave-list {
+      margin-top: 30px;
+    }
+
+    .leave-list h3 {
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    .leave-card {
+      background-color: #f9f9f9;
+      border-left: 5px solid #4caf50;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .leave-card p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Leave & Absence Management</h1>
+    </header>
+
+    <section class="form-section">
+      <h2>Request Leave</h2>
+      <form id="leaveForm">
+        <label for="name">Employee Name:</label>
+        <input type="text" id="name" placeholder="Enter your name" required />
+
+        <label for="type">Leave Type:</label>
+        <select id="type">
+          <option>Casual Leave</option>
+          <option>Sick Leave</option>
+          <option>Work From Home</option>
+          <option>Compensatory Off</option>
+        </select>
+
+        <label for="from">From:</label>
+        <input type="date" id="from" required />
+
+        <label for="to">To:</label>
+        <input type="date" id="to" required />
+
+        <label for="reason">Reason:</label>
+        <textarea id="reason" placeholder="Enter reason" required></textarea>
+
+        <button type="submit">Submit Request</button>
+      </form>
+
+      <div class="success-message" id="successMessage">
+        Leave request submitted successfully!
+      </div>
+    </section>
+
+    <section class="leave-list">
+      <h3>Submitted Leave Requests</h3>
+      <div id="leaveRequests"></div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById("leaveForm");
+    const successMessage = document.getElementById("successMessage");
+    const leaveRequestsDiv = document.getElementById("leaveRequests");
+
+    // Load requests from localStorage on page load
+    window.onload = function () {
+      displayLeaveRequests();
+    };
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Collect form data
+      const request = {
+        name: document.getElementById("name").value,
+        type: document.getElementById("type").value,
+        from: document.getElementById("from").value,
+        to: document.getElementById("to").value,
+        reason: document.getElementById("reason").value,
+        date: new Date().toLocaleString()
+      };
+
+      // Save to localStorage
+      let requests = JSON.parse(localStorage.getItem("leaveRequests")) || [];
+      requests.push(request);
+      localStorage.setItem("leaveRequests", JSON.stringify(requests));
+
+      // Show success
+      successMessage.style.display = "block";
+      setTimeout(() => {
+        successMessage.style.display = "none";
+      }, 3000);
+
+      form.reset();
+      displayLeaveRequests();
+    });
+
+    function displayLeaveRequests() {
+      const requests = JSON.parse(localStorage.getItem("leaveRequests")) || [];
+      leaveRequestsDiv.innerHTML = "";
+
+      if (requests.length === 0) {
+        leaveRequestsDiv.innerHTML = "<p>No leave requests submitted yet.</p>";
+        return;
+      }
+
+      requests.forEach((req, index) => {
+        const card = document.createElement("div");
+        card.className = "leave-card";
+        card.innerHTML = `
+          <p><strong>${req.name}</strong> requested <strong>${req.type}</strong></p>
+          <p>From: ${req.from} To: ${req.to}</p>
+          <p>Reason: ${req.reason}</p>
+          <p><small>Submitted on ${req.date}</small></p>
+        `;
+        leaveRequestsDiv.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
